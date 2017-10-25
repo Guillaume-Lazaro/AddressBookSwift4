@@ -14,6 +14,8 @@
 		BC5345F21FA07EDB00DE5840 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC5345F01FA07EDB00DE5840 /* LaunchScreen.storyboard */; };
 		BC5345FD1FA07EDB00DE5840 /* AddressBookSwift4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5345FC1FA07EDB00DE5840 /* AddressBookSwift4Tests.swift */; };
 		BC5346081FA07EDB00DE5840 /* AddressBookSwift4UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5346071FA07EDB00DE5840 /* AddressBookSwift4UITests.swift */; };
+		BC5346161FA07FC000DE5840 /* ContactsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5346151FA07FC000DE5840 /* ContactsTableViewController.swift */; };
+		BC5346181FA0816600DE5840 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC5346171FA0816600DE5840 /* ContactTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		BC5346031FA07EDB00DE5840 /* AddressBookSwift4UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AddressBookSwift4UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC5346071FA07EDB00DE5840 /* AddressBookSwift4UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookSwift4UITests.swift; sourceTree = "<group>"; };
 		BC5346091FA07EDB00DE5840 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BC5346151FA07FC000DE5840 /* ContactsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsTableViewController.swift; sourceTree = "<group>"; };
+		BC5346171FA0816600DE5840 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +102,9 @@
 			isa = PBXGroup;
 			children = (
 				BC5345E41FA07EDB00DE5840 /* AppDelegate.swift */,
+				BC5346151FA07FC000DE5840 /* ContactsTableViewController.swift */,
 				BC5345E81FA07EDB00DE5840 /* Main.storyboard */,
+				BC5346171FA0816600DE5840 /* ContactTableViewCell.swift */,
 				BC5345EE1FA07EDB00DE5840 /* Assets.xcassets */,
 				BC5345F01FA07EDB00DE5840 /* LaunchScreen.storyboard */,
 				BC5345F31FA07EDB00DE5840 /* Info.plist */,
@@ -259,8 +265,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC5346181FA0816600DE5840 /* ContactTableViewCell.swift in Sources */,
 				BC5345ED1FA07EDB00DE5840 /* AddressBookSwift4.xcdatamodeld in Sources */,
 				BC5345E51FA07EDB00DE5840 /* AppDelegate.swift in Sources */,
+				BC5346161FA07FC000DE5840 /* ContactsTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
