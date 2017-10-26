@@ -109,13 +109,13 @@ class ContactsTableViewController: UITableViewController {
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = PersonDetailsViewController(nibName: nil, bundle: nil)
-        controller.delegate = self
         controller.person = self.persons[indexPath.row]
+        controller.delegate = self
         self.navigationController?.pushViewController(controller, animated: true)
-
         
+        //Code pour plus tard
         /*controller.onDeleteUser = { (personToDelete) in
-            self.persons = self.persons.filter(<#T##isIncluded: (Person) throws -> Bool##(Person) throws -> Bool#>)
+            self.persons = self.persons.filter(blabla)
         }*/
     }
 
@@ -187,6 +187,7 @@ extension ContactsTableViewController: AddContactDelegate {
 
 extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
     func deleteContact(){
+        
         self.navigationController?.popViewController(animated: true)
         self.tableView.reloadData()
     }

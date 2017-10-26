@@ -1,11 +1,3 @@
-//
-//  PersonDetailsViewController.swift
-//  AddressBookSwift4
-//
-//  Created by Guillaume Lazaro on 25/10/2017.
-//  Copyright © 2017 Guillaume Lazaro. All rights reserved.
-//
-
 import UIKit
 
 protocol PersonDetailsViewControllerDelegate: AnyObject {
@@ -25,25 +17,30 @@ class PersonDetailsViewController: UIViewController {
     }
 
     @IBAction func didPressDelete(_ sender: Any) {
+        //Création de l'alert pour confirmer la suppression:
         let alertController = UIAlertController(title: "Supprimer ?", message: "Êtes-vous sur de vouloir supprimer?", preferredStyle: UIAlertControllerStyle.alert)
         
+        //1 bouton cancel & 1 bouton valider
         let cancelAction = UIAlertAction(title: "Non", style: .cancel) { _ in
             print("Non merci")
         }
         
         let deleteAction = UIAlertAction(title: "Oui", style: .default) { _ in
-            let context = self.appDelegate().persistentContainer.viewContext
+            let context = self.appDelegate().persistentContainer.viewContext    //récupération de la db
             
-            if let personToDelete = self.person {
+            /*if let personToDelete = self.person {
                 context.delete(personToDelete)
-            }
-            try? context.save
+            }*/
+            context.delete(self.person!)        //On supprimer la personne..
+            try? context.save                   //.. et on sauvegarde les modifications
             self.delegate?.deleteContact()
         }
+        
         
         alertController.addAction(cancelAction)
         alertController.addAction(deleteAction)
         
+        //On affiche l'alert
         self.present(alertController, animated: true) {}
     }
     
@@ -51,16 +48,4 @@ class PersonDetailsViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
