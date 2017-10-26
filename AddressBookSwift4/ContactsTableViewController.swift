@@ -1,11 +1,3 @@
-//
-//  ContactsTableViewController.swift
-//  AddressBookSwift4
-//
-//  Created by Guillaume Lazaro on 25/10/2017.
-//  Copyright © 2017 Guillaume Lazaro. All rights reserved.
-//
-
 import UIKit
 import CoreData
 
@@ -54,7 +46,6 @@ class ContactsTableViewController: UITableViewController {
         let addContact = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addContactPress))
         self.navigationItem.rightBarButtonItem = addContact
         
-        
         //Message de bienvenue :
         if let value = UserDefaults.standard.value(forKey: "isFirstTime") {
             print("Nope")
@@ -98,10 +89,10 @@ class ContactsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ContactTableViewCell", for: indexPath)
 
-        // Configure the cell :
+        // Configuration de la cellule pour afficher les contacts
         if let contactCell = cell as? ContactTableViewCell{
             if let lastName = persons[indexPath.row].lastName, let firstName = persons[indexPath.row].firstName {
-                contactCell.nameLabel.text = lastName + " " + firstName
+                contactCell.nameLabel.text = lastName + " " + firstName     //On affiche juste le nom, un espace et le prénom
             }
         }
         return cell
@@ -167,7 +158,6 @@ class ContactsTableViewController: UITableViewController {
 }
 
 extension ContactsTableViewController: AddContactDelegate {
-    
     func addContact(lastName: String, firstName: String) {
         let context = appDelegate().persistentContainer.viewContext
         let person = Person(entity: Person.entity(), insertInto: context)
@@ -181,15 +171,14 @@ extension ContactsTableViewController: AddContactDelegate {
         }
         
         self.navigationController?.popViewController(animated: true)
-        reloadDataFromDB()
+        self.reloadDataFromDB()
     }
 }
 
 extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
     func deleteContact(){
-        
         self.navigationController?.popViewController(animated: true)
-        self.tableView.reloadData()
+        self.reloadDataFromDB()
     }
 }
 
