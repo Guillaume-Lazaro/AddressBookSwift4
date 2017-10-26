@@ -74,6 +74,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
 
     // MARK: - Core Data Saving support
+    
+    //à moi:
+    func makeGETCall() {
+        let urlPath: String = "http://10.1.0.242:3000/persons"
+        guard let url = URL(string: urlPath) else {
+            //bla
+            return
+        }
+        
+        let urlRequest = URLRequest(url: url)
+
+        //Requete
+        let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
+            //+
+            guard let data = data else {
+                return
+            }
+
+            let dictionnary = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers)
+            
+            guard let jsonDict = dictionnary as? [[String : Any]] else {
+                return
+            }
+            
+            let context = self.persistentContainer.viewContext
+            
+            for personDict in jsonDict {
+                let person = Person(entity: Person.entity(), insertInto: context)
+                person.firstName = personDict ["surname"] as? String ?? "DefaultName"
+                person.lastName = personDict ["lastname"] as? String ?? "DefaultName"
+                
+            }
+            try? context.save()
+        }
+        task.resume()
+    }
 
     func saveContext () {
         let context = persistentContainer.viewContext

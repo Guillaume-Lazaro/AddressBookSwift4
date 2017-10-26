@@ -12,13 +12,15 @@ class ContactsTableViewController: UITableViewController {
         let sortFirstName = NSSortDescriptor(key: "firstName", ascending: true)
         let sortLastName = NSSortDescriptor(key: "lastName", ascending: true)
         fetchRequest.sortDescriptors = [sortFirstName,sortLastName]
-
+        
         let context = self.appDelegate().persistentContainer.viewContext
         
         guard let personsDB = try? context.fetch(fetchRequest) else {return}
         persons = personsDB
         self.tableView.reloadData()
     }
+    
+    var resultController: NSFetchedResultsController<Person>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +42,24 @@ class ContactsTableViewController: UITableViewController {
         
         //Initialisation du titre et de la liste
         self.title = "Mes Contacts"
-        reloadDataFromDB()
+                
+        //Neew V3.0
+        //reloadDataFromDB()
+        
+        //New appel serveur
+        appDelegate().makeGETCall()
+        
+        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
+        let sortFirstName = NSSortDescriptor(key: "firstName", ascending: true)
+        let sortLastName = NSSortDescriptor(key: "lastName", ascending: true)
+        fetchRequest.sortDescriptors = [sortFirstName,sortLastName]
+        
+        
+        resultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.appDelegate().persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        resultController.delegate = self
+        
+        try? resultController.performFetch()
+        ///////
         
         //Bouton pour ajouter un contact
         let addContact = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addContactPress))
@@ -75,11 +94,18 @@ class ContactsTableViewController: UITableViewController {
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        if let frc = resultController {
+            return frc.sections!.count
+        }
+        return 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return persons.count
+        guard let sections = self.resultController?.sections else {
+            fatalError("No sections in fetchedResultsController")
+        }
+        let sectionInfo = sections[section]
+        return sectionInfo.numberOfObjects
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -88,11 +114,17 @@ class ContactsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ContactTableViewCell", for: indexPath)
-
+        
+        guard let object = self.resultController?.object(at: indexPath) else {
+            fatalError("Attempt to configure cell without a managed object")
+        }
+        
         // Configuration de la cellule pour afficher les contacts
         if let contactCell = cell as? ContactTableViewCell{
-            if let lastName = persons[indexPath.row].lastName, let firstName = persons[indexPath.row].firstName {
-                contactCell.nameLabel.text = lastName + " " + firstName     //On affiche juste le nom, un espace et le prénom
+            if let person = self.resultController?.object(at: indexPath) {
+                if let lastName = person.lastName, let firstName = person.firstName {
+                    contactCell.nameLabel.text = lastName + " " + firstName     //On affiche juste le nom, un espace et le prénom
+                }
             }
         }
         return cell
@@ -100,7 +132,7 @@ class ContactsTableViewController: UITableViewController {
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = PersonDetailsViewController(nibName: nil, bundle: nil)
-        controller.person = self.persons[indexPath.row]
+        controller.person = self.persons[indexPath.row] //TODO fix it
         controller.delegate = self
         self.navigationController?.pushViewController(controller, animated: true)
         
@@ -109,52 +141,6 @@ class ContactsTableViewController: UITableViewController {
             self.persons = self.persons.filter(blabla)
         }*/
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension ContactsTableViewController: AddContactDelegate {
@@ -171,20 +157,45 @@ extension ContactsTableViewController: AddContactDelegate {
         }
         
         self.navigationController?.popViewController(animated: true)
-        self.reloadDataFromDB()
+        //self.reloadDataFromDB()
     }
 }
 
 extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
     func deleteContact(){
         self.navigationController?.popViewController(animated: true)
-        self.reloadDataFromDB()
+        //self.reloadDataFromDB()
     }
 }
 
 extension UIViewController {
     func appDelegate() -> AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
+    }
+}
+
+extension ContactsTableViewController : NSFetchedResultsControllerDelegate {
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.reloadData()
+    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let sectionInfo = resultController?.sections?[section] else {
+            return nil
+        }
+        return sectionInfo.name
+    }
+    
+    override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return resultController?.sectionIndexTitles
+    }
+    
+    override func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        guard let result = resultController?.section(forSectionIndexTitle: title, at: index) else {
+            fatalError("Unable to locate section for \(title) at index: \(index)")
+        }
+        return result
     }
 }
 
