@@ -4,7 +4,7 @@
         <attribute name="avatarUrl" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="firstName" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="lastName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastName" attributeType="String" syncable="YES"/>
     </entity>
     <fetchRequest name="getAllPersonNamedDupont" entity="Person" predicateString="lastName CONTAINS &quot;Dupont&quot;"/>
     <elements>

@@ -26,6 +26,12 @@ class ContactsTableViewController: UITableViewController {
         guard let personsDB = try? context.fetch(fetchRequest) else {return}
         persons = personsDB
         self.tableView.reloadData()
+        
+        //TODO
+        /*
+        context.delete(person)
+        try? context.save
+        */
     }
     
     override func viewDidLoad() {
@@ -47,8 +53,6 @@ class ContactsTableViewController: UITableViewController {
         }*/
         
         self.title = "Mes Contacts"
-        
-        //V2.0 with CoreData
         reloadDataFromDB()
         
         let context = appDelegate().persistentContainer.viewContext
@@ -109,7 +113,7 @@ class ContactsTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return persons.count
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -121,9 +125,11 @@ class ContactsTableViewController: UITableViewController {
 
         // Configure the cell :
         if let contactCell = cell as? ContactTableViewCell{
-            //contactCell.nameLabel.text = persons[indexPath.row].lastName + " " + persons[indexPath.row].firstName
+            
+            if let lastName = persons[indexPath.row].lastName, let firstName = persons[indexPath.row].firstName {
+                contactCell.nameLabel.text = lastName + " " + firstName
+            }
         }
-
         return cell
     }
  
@@ -188,10 +194,8 @@ extension ContactsTableViewController: AddContactDelegate {
     func addContact(lastName: String, firstName: String) {
         let context = appDelegate().persistentContainer.viewContext
         let person = Person(entity: Person.entity(), insertInto: context)
-        
         person.firstName = firstName
         person.lastName = lastName
-    
         
         do {
             try context.save()
@@ -200,7 +204,7 @@ extension ContactsTableViewController: AddContactDelegate {
         }
         
         self.navigationController?.popViewController(animated: true)
-        self.tableView.reloadData()
+        reloadDataFromDB()
     }
 }
 
