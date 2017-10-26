@@ -26,12 +26,6 @@ class ContactsTableViewController: UITableViewController {
         guard let personsDB = try? context.fetch(fetchRequest) else {return}
         persons = personsDB
         self.tableView.reloadData()
-        
-        //TODO
-        /*
-        context.delete(person)
-        try? context.save
-        */
     }
     
     override func viewDidLoad() {
@@ -52,27 +46,11 @@ class ContactsTableViewController: UITableViewController {
             }
         }*/
         
+        //Initialisation du titre et de la liste
         self.title = "Mes Contacts"
         reloadDataFromDB()
         
-        let context = appDelegate().persistentContainer.viewContext
-        let person = Person(entity: Person.entity(), insertInto: context)
-        
-        person.firstName = "Jean"
-        person.lastName = "Dupont"
-        
-        do {
-            try context.save()
-        } catch {
-            print("Erreur : "+error.localizedDescription)
-        }
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        
+        //Bouton pour ajouter un contact
         let addContact = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addContactPress))
         self.navigationItem.rightBarButtonItem = addContact
         
@@ -94,7 +72,7 @@ class ContactsTableViewController: UITableViewController {
     }
 
     @objc func addContactPress() {
-        //ceate and push addViewController + set delegate
+        //Création du controller pour l'ajout et du delegate
         let controller = AddPersonViewController(nibName: nil, bundle: nil)
         self.navigationController?.pushViewController(controller, animated: true)
         
@@ -103,10 +81,7 @@ class ContactsTableViewController: UITableViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-
-    // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -125,7 +100,6 @@ class ContactsTableViewController: UITableViewController {
 
         // Configure the cell :
         if let contactCell = cell as? ContactTableViewCell{
-            
             if let lastName = persons[indexPath.row].lastName, let firstName = persons[indexPath.row].firstName {
                 contactCell.nameLabel.text = lastName + " " + firstName
             }
@@ -135,7 +109,10 @@ class ContactsTableViewController: UITableViewController {
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = PersonDetailsViewController(nibName: nil, bundle: nil)
-        controller.person = persons[indexPath.row]
+        controller.delegate = self
+        controller.person = self.persons[indexPath.row]
+        self.navigationController?.pushViewController(controller, animated: true)
+
         
         /*controller.onDeleteUser = { (personToDelete) in
             self.persons = self.persons.filter(<#T##isIncluded: (Person) throws -> Bool##(Person) throws -> Bool#>)
@@ -205,6 +182,13 @@ extension ContactsTableViewController: AddContactDelegate {
         
         self.navigationController?.popViewController(animated: true)
         reloadDataFromDB()
+    }
+}
+
+extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
+    func deleteContact(){
+        self.navigationController?.popViewController(animated: true)
+        self.tableView.reloadData()
     }
 }
 

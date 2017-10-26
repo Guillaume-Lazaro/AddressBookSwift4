@@ -8,44 +8,43 @@
 
 import UIKit
 
+protocol PersonDetailsViewControllerDelegate: AnyObject {
+    func deleteContact()
+}
+
 class PersonDetailsViewController: UIViewController {
 
-    
-    
     @IBOutlet weak var lastNameLabel: UILabel!
     @IBOutlet weak var firstNameLabel: UILabel!
     
     weak var person: Person?
+    weak var delegate: PersonDetailsViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
     }
 
     @IBAction func didPressDelete(_ sender: Any) {
         let alertController = UIAlertController(title: "Supprimer ?", message: "Êtes-vous sur de vouloir supprimer?", preferredStyle: UIAlertControllerStyle.alert)
         
-        let cancelAction = UIAlertAction(title: "Non", style: .cancel) { (action) in
+        let cancelAction = UIAlertAction(title: "Non", style: .cancel) { _ in
             print("Non merci")
         }
         
-        let deleteAction = UIAlertAction(title: "Oui", style: .default) { _ in //(action) = action = _
-            self.navigationController?.popViewController(animated: true)
+        let deleteAction = UIAlertAction(title: "Oui", style: .default) { _ in
+            let context = self.appDelegate().persistentContainer.viewContext
+            
+            if let personToDelete = self.person {
+                context.delete(personToDelete)
+            }
+            try? context.save
+            self.delegate?.deleteContact()
         }
         
         alertController.addAction(cancelAction)
         alertController.addAction(deleteAction)
         
-        self.present(alertController, animated: true) {
-            print("Present?")
-        }
-        
-        /*
-         guard ....
-         
-         onDeleteUser(person!)
-         */
+        self.present(alertController, animated: true) {}
     }
     
     override func didReceiveMemoryWarning() {
