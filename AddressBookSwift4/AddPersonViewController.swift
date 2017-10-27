@@ -51,7 +51,7 @@ class AddPersonViewController: UIViewController {
         var json = [String:String]()
         json["lastname"] = self.PersonTextField.text ?? "unknown"
         json["surname"] = self.firstNameTextField.text ?? "unknown"
-        json["pictureUrl"] = "http://i0.kym-cdn.com/entries/icons/original/000/019/422/IMG_4983.PNG"
+        json["pictureUrl"] = "https://vignette.wikia.nocookie.net/fallout/images/c/c3/Fallout3e.jpg/revision/latest/scale-to-width-down/160?cb=20090201113849"
         
         let url = URL(string: "http://10.1.0.242:3000/persons")!
         let session = URLSession.shared

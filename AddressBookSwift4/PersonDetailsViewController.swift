@@ -8,12 +8,23 @@ class PersonDetailsViewController: UIViewController {
 
     @IBOutlet weak var lastNameLabel: UILabel!
     @IBOutlet weak var firstNameLabel: UILabel!
+    @IBOutlet weak var picutreImageView: UIImageView!
     
     weak var person: Person?
     weak var delegate: PersonDetailsViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        displayImage()
+    }
+    
+    func displayImage() {
+        
+        let strUrl = person?.avatarUrl ?? "https://vignette.wikia.nocookie.net/fallout/images/c/c3/Fallout3e.jpg/revision/latest/scale-to-width-down/160?cb=20090201113849"        
+        
+        let url = URL(string: strUrl)
+        let data = try? Data(contentsOf: url!)
+        picutreImageView.image = UIImage(data: data!)
     }
 
     @IBAction func didPressDelete(_ sender: Any) {
