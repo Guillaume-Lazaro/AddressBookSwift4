@@ -15,6 +15,8 @@ class PersonDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        firstNameLabel.text = person?.firstName
+        lastNameLabel.text = person?.lastName
         displayImage()
     }
     
@@ -37,12 +39,7 @@ class PersonDetailsViewController: UIViewController {
         }
         
         let deleteAction = UIAlertAction(title: "Oui", style: .default) { _ in
-            let context = self.appDelegate().persistentContainer.viewContext    //récupération de la db
-            //context.delete(self.person!)
-            //try? context.save
-            
             self.deletePersonOnDB()
-            
             self.delegate?.deleteContact()
         }
 
@@ -69,10 +66,7 @@ class PersonDetailsViewController: UIViewController {
             guard error == nil else {
                 return
             }
-            
-            let context = self.appDelegate().persistentContainer.viewContext
             context.delete(self.person!)
-            
             do {
                 if context.hasChanges {
                     try context.save()

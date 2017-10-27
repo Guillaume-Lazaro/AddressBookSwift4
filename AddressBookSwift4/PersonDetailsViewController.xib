@@ -63,7 +63,7 @@
                         </label>
                     </subviews>
                 </stackView>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Spl-ZJ-7Xe">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Spl-ZJ-7Xe">
                     <rect key="frame" x="114" y="125.5" width="92" height="92"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="Spl-ZJ-7Xe" secondAttribute="height" multiplier="1:1" id="fkt-eU-fY5"/>
