@@ -75,7 +75,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data Saving support
     
-    //à moi:
+    
+    //Récupération des contacts du serveur:
     func makeGETCall() {
         let urlPath: String = "http://10.1.0.242:3000/persons"
         guard let url = URL(string: urlPath) else {
@@ -99,16 +100,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
             let context = self.persistentContainer.viewContext
-            
-            for personDict in jsonDict {
-                let person = Person(entity: Person.entity(), insertInto: context)
-                person.firstName = personDict ["surname"] as? String ?? "DefaultName"
-                person.lastName = personDict ["lastname"] as? String ?? "DefaultName"
-                
-            }
-            try? context.save()
+            self.updateFromJsonData(json: jsonDict)
         }
         task.resume()
+    }
+    
+    func updateFromJsonData(json: [[String : Any ]]) {
+        
+        let sort = NSSortDescriptor(key: "id", ascending: true)
+        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
+        fetchRequest.sortDescriptors = [sort]
+        
+        let context = self.persistentContainer.viewContext
+        
+        let persons = try! context.fetch(fetchRequest)
+        let personIds = persons.map({ (person) -> Int32 in
+            return person.id
+        })
+        
+        let serversid = json.map { (dict) -> Int in
+            return dict["id"] as? Int ?? 0
+        }
+        
+        //Suppression des data qui ne sont pas sur le serveur:
+        for person in persons {
+            if !serversid.contains(Int(person.id)) {
+                context.delete(person)
+            }
+        }
+        
+        //Mise à jour ou création des personnes présente sur le serveur:
+        for jsonPerson in json {
+            let id = jsonPerson["id"] as? Int ?? 0
+            if let index = personIds.index(of: Int32(id)) {
+                persons[index].lastName = jsonPerson["lastname"] as? String ?? "ERROR"
+                persons[index].firstName = jsonPerson["surname"] as? String ?? "ERROR"
+                persons[index].avatarUrl = jsonPerson["pictureUrl"] as? String ?? "ERROR"
+            } else {
+                let person = Person(context: context)
+                person.lastName = jsonPerson["lastname"] as? String
+                person.firstName = jsonPerson["surname"] as? String
+                person.avatarUrl = jsonPerson["pictureUrl"] as? String
+                person.id = Int32(id)
+            }
+        }
+        
+        do {
+            if context.hasChanges {
+                try context.save()
+            }
+        } catch {
+            print(error)
+        }
     }
 
     func saveContext () {
@@ -124,6 +167,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+}
 
+extension UIViewController {
+    func appDelegate() -> AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
 }
 

@@ -16,7 +16,8 @@ class AddPersonViewController: UIViewController {
     
     @IBAction func didPressValid(_ sender: Any) {
         if let lastNameEntered = PersonTextField.text, let firstNameEntered = firstNameTextField.text {
-            self.delegate?.addContact(lastName: lastNameEntered, firstName: firstNameEntered)
+            addContactOnDB()
+            self.delegate?.addContact(lastName: lastNameEntered, firstName: firstNameEntered) //OLD
             //fillProgressBar() //Bon ça c'est rigolo mais pas très utile
         }
     }
@@ -46,6 +47,56 @@ class AddPersonViewController: UIViewController {
         }
     }
     
+    func addContactOnDB() {
+        var json = [String:String]()
+        json["lastname"] = self.PersonTextField.text ?? "unknown"
+        json["surname"] = self.firstNameTextField.text ?? "unknown"
+        json["pictureUrl"] = "http://i0.kym-cdn.com/entries/icons/original/000/019/422/IMG_4983.PNG"
+        
+        let url = URL(string: "http://10.1.0.242:3000/persons")!
+        let session = URLSession.shared
+        var request = URLRequest(url: url)
+        let context = self.appDelegate().persistentContainer.viewContext
+        request.httpMethod = "POST"
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+        } catch {
+            print(error)
+        }
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = session.dataTask(with: request, completionHandler: { data, response, error in
+            guard error == nil else {
+                return
+            }
+            guard let data = data else {
+                return
+            }
+            
+            do {
+                if let jsonDict = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any] {
+                    let person = Person(entity: Person.entity(), insertInto: context)
+                    person.lastName = jsonDict["lastname"] as? String
+                    person.firstName = jsonDict["surname"] as? String
+                    person.avatarUrl = jsonDict["pictureUrl"] as? String
+                    person.id = Int32(jsonDict["id"] as? Int ?? 0)
+                    
+                    do {
+                        if context.hasChanges {
+                            try context.save()
+                        }
+                    } catch {
+                        print(error)
+                    }
+                }
+            } catch {
+                print(error)
+            }
+        })
+        task.resume()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -56,13 +107,5 @@ class AddPersonViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    /*
-     // MARK: - Navigation
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
 }
+

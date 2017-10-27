@@ -132,32 +132,15 @@ class ContactsTableViewController: UITableViewController {
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = PersonDetailsViewController(nibName: nil, bundle: nil)
-        controller.person = self.persons[indexPath.row] //TODO fix it
+        controller.person = self.resultController?.object(at: indexPath)
         controller.delegate = self
         self.navigationController?.pushViewController(controller, animated: true)
-        
-        //Code pour plus tard
-        /*controller.onDeleteUser = { (personToDelete) in
-            self.persons = self.persons.filter(blabla)
-        }*/
     }
 }
 
 extension ContactsTableViewController: AddContactDelegate {
-    func addContact(lastName: String, firstName: String) {
-        let context = appDelegate().persistentContainer.viewContext
-        let person = Person(entity: Person.entity(), insertInto: context)
-        person.firstName = firstName
-        person.lastName = lastName
-        
-        do {
-            try context.save()
-        } catch {
-            print("Erreur : "+error.localizedDescription)
-        }
-        
+    func addContact(lastName: String, firstName: String) {        
         self.navigationController?.popViewController(animated: true)
-        //self.reloadDataFromDB()
     }
 }
 
@@ -165,12 +148,6 @@ extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
     func deleteContact(){
         self.navigationController?.popViewController(animated: true)
         //self.reloadDataFromDB()
-    }
-}
-
-extension UIViewController {
-    func appDelegate() -> AppDelegate {
-        return UIApplication.shared.delegate as! AppDelegate
     }
 }
 
