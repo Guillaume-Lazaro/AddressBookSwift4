@@ -147,6 +147,7 @@ extension ContactsTableViewController: AddContactDelegate {
 extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
     func deleteContact(){
         self.navigationController?.popViewController(animated: true)
+        
         //self.reloadDataFromDB()
     }
 }
