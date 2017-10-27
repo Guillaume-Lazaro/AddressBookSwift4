@@ -24,10 +24,13 @@ class PersonDetailsViewController: UIViewController {
     
     func displayImage() {
         //Récupération et affichage de l'image de l'avatar
-        let strUrl = person?.avatarUrl ?? "https://vignette.wikia.nocookie.net/fallout/images/c/c3/Fallout3e.jpg/revision/latest/scale-to-width-down/160?cb=20090201113849"
-        let url = URL(string: strUrl)
-        let data = try? Data(contentsOf: url!)
-        picutreImageView.image = UIImage(data: data!)
+        DispatchQueue.main.async() {
+            //self.imageView.image = UIImage(data: data)
+            let strUrl = self.person?.avatarUrl ?? "https://vignette.wikia.nocookie.net/fallout/images/c/c3/Fallout3e.jpg/revision/latest/scale-to-width-down/160?cb=20090201113849"
+            let url = URL(string: strUrl)
+            let data = try? Data(contentsOf: url!)
+            self.picutreImageView.image = UIImage(data: data!)
+        }
     }
 
     @IBAction func didPressDelete(_ sender: Any) {
