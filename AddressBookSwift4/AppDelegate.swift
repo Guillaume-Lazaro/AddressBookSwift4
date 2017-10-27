@@ -80,39 +80,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func makeGETCall() {
         let urlPath: String = "http://10.1.0.242:3000/persons"
         guard let url = URL(string: urlPath) else {
-            //bla
             return
         }
         
+        //Création de la requete et de la tache pour récupérer les contacts de la bdd
         let urlRequest = URLRequest(url: url)
-
-        //Requete
         let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
-            //+
             guard let data = data else {
                 return
             }
 
             let dictionnary = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers)
-            
             guard let jsonDict = dictionnary as? [[String : Any]] else {
                 return
             }
             
-            let context = self.persistentContainer.viewContext
             self.updateFromJsonData(json: jsonDict)
         }
         task.resume()
     }
     
     func updateFromJsonData(json: [[String : Any ]]) {
-        
+        //Création de la requete pour mettre à jour à partir du fichiers json
         let sort = NSSortDescriptor(key: "id", ascending: true)
         let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
         fetchRequest.sortDescriptors = [sort]
         
         let context = self.persistentContainer.viewContext
-        
         let persons = try! context.fetch(fetchRequest)
         let personIds = persons.map({ (person) -> Int32 in
             return person.id
@@ -174,4 +168,3 @@ extension UIViewController {
         return UIApplication.shared.delegate as! AppDelegate
     }
 }
-

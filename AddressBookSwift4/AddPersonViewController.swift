@@ -16,9 +16,9 @@ class AddPersonViewController: UIViewController {
     
     @IBAction func didPressValid(_ sender: Any) {
         if let lastNameEntered = PersonTextField.text, let firstNameEntered = firstNameTextField.text {
+            //fillProgressBar() //Bon ça c'est rigolo mais pas très utile
             addContactOnDB()
             self.delegate?.addContact(lastName: lastNameEntered, firstName: firstNameEntered) //OLD
-            //fillProgressBar() //Bon ça c'est rigolo mais pas très utile
         }
     }
     
@@ -30,24 +30,26 @@ class AddPersonViewController: UIViewController {
                 Thread.sleep(forTimeInterval: 0.1)
                 progress += 0.1
                 
-                print(progress)
                 DispatchQueue.main.async {
                     self.progressBarAdd.setProgress(progress, animated: true)
                 }
             }
             DispatchQueue.main.async {
-                self.addPerson()
+                //self.addPerson()      //OLD
+                self.addContactOnDB()   //NEW
             }
         }
     }
     
+    /* Ancienne solution pour ajouter des contacts
     func addPerson() {
         if let lastNameEntered = PersonTextField.text, let firstNameEntered = firstNameTextField.text {
             self.delegate?.addContact(lastName: lastNameEntered, firstName: firstNameEntered)
         }
-    }
+    }*/
     
     func addContactOnDB() {
+        //Ajout d'un contact sur la bdd
         var json = [String:String]()
         json["lastname"] = self.PersonTextField.text ?? "unknown"
         json["surname"] = self.firstNameTextField.text ?? "unknown"
@@ -99,8 +101,6 @@ class AddPersonViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
     }
     
     override func didReceiveMemoryWarning() {

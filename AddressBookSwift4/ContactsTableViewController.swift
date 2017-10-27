@@ -8,13 +8,13 @@ class ContactsTableViewController: UITableViewController {
     weak var delegate: AddContactDelegate?
     
     func reloadDataFromDB() {
+        //Récupération des data:
         let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
         let sortFirstName = NSSortDescriptor(key: "firstName", ascending: true)
         let sortLastName = NSSortDescriptor(key: "lastName", ascending: true)
         fetchRequest.sortDescriptors = [sortFirstName,sortLastName]
         
         let context = self.appDelegate().persistentContainer.viewContext
-        
         guard let personsDB = try? context.fetch(fetchRequest) else {return}
         persons = personsDB
         self.tableView.reloadData()
@@ -25,7 +25,7 @@ class ContactsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        /*
+        /* Ancien code permettant de récupérer des utilisateurs à partir d'un fichier plist
         let namesPlist = Bundle.main.path(forResource: "names.plist", ofType:nil)
         if let namesPath = namesPlist {
             let url = URL(fileURLWithPath: namesPath)
@@ -42,11 +42,6 @@ class ContactsTableViewController: UITableViewController {
         
         //Initialisation du titre et de la liste
         self.title = "Mes Contacts"
-                
-        //Neew V3.0
-        //reloadDataFromDB()
-        
-        //New appel serveur
         appDelegate().makeGETCall()
         
         let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
@@ -54,20 +49,19 @@ class ContactsTableViewController: UITableViewController {
         let sortLastName = NSSortDescriptor(key: "lastName", ascending: true)
         fetchRequest.sortDescriptors = [sortFirstName,sortLastName]
         
-        
+        //Nouvelle version: utilisation d'un fetched result controller
         resultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.appDelegate().persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
         resultController.delegate = self
         
         try? resultController.performFetch()
-        ///////
         
         //Bouton pour ajouter un contact
         let addContact = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addContactPress))
         self.navigationItem.rightBarButtonItem = addContact
         
         //Message de bienvenue :
-        if let value = UserDefaults.standard.value(forKey: "isFirstTime") {
-            print("Nope")
+        if UserDefaults.standard.value(forKey: "isFirstTime") != nil {
+            print("It's not the first time")
         } else {
             UserDefaults.standard.set(false, forKey: "isFirstTime")
             
@@ -115,7 +109,7 @@ class ContactsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ContactTableViewCell", for: indexPath)
         
-        guard let object = self.resultController?.object(at: indexPath) else {
+        guard (self.resultController?.object(at: indexPath)) != nil else {
             fatalError("Attempt to configure cell without a managed object")
         }
         
@@ -147,8 +141,7 @@ extension ContactsTableViewController: AddContactDelegate {
 extension ContactsTableViewController: PersonDetailsViewControllerDelegate{
     func deleteContact(){
         self.navigationController?.popViewController(animated: true)
-        
-        //self.reloadDataFromDB()
+        //self.reloadDataFromDB() //Obsoléte
     }
 }
 

@@ -15,15 +15,16 @@ class PersonDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //Affichage:
         firstNameLabel.text = person?.firstName
         lastNameLabel.text = person?.lastName
         displayImage()
     }
     
     func displayImage() {
-        
-        let strUrl = person?.avatarUrl ?? "https://vignette.wikia.nocookie.net/fallout/images/c/c3/Fallout3e.jpg/revision/latest/scale-to-width-down/160?cb=20090201113849"        
-        
+        //Récupération et affichage de l'image de l'avatar
+        let strUrl = person?.avatarUrl ?? "https://vignette.wikia.nocookie.net/fallout/images/c/c3/Fallout3e.jpg/revision/latest/scale-to-width-down/160?cb=20090201113849"
         let url = URL(string: strUrl)
         let data = try? Data(contentsOf: url!)
         picutreImageView.image = UIImage(data: data!)
@@ -54,14 +55,16 @@ class PersonDetailsViewController: UIViewController {
         guard let id = self.person?.id else {
             return
         }
-        var strId = String(id)
         
+        let strId = String(id)
         let url = URL(string: "http://10.1.0.242:3000/persons/"+strId)!
+        
         let session = URLSession.shared
         var request = URLRequest(url: url)
         let context = self.appDelegate().persistentContainer.viewContext
         request.httpMethod = "DELETE"
         
+        //Tache pour supprimer la person avec l'id correspondant:
         let task = session.dataTask(with: request, completionHandler: { data, response, error in
             guard error == nil else {
                 return
